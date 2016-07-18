@@ -35,6 +35,8 @@ use Zend\Expressive\Phptal\Helper;
  *     // set how long compiled templates and phptal:cache files are kept; in days 
  *     'cache_lifetime' => 30,
  *     'encoding' => 'set input and ouput encoding; defaults to UTF-8',
+ *     // one of the predefined constant: PHPTAL::HTML5,  PHPTAL::XML, PHPTAL::XHTML
+ *     'output_mode' => PHPTAL::HTML5,
  *     // set whitespace compression mode
  *     'compress_whitespace' => boolean,
  *     // strip all html comments
@@ -84,6 +86,10 @@ class PhptalRendererFactory
             $engine->setEncoding($config['encoding']);
         }
         
+        // Configure the output mode
+        $outputMode = isset($config['output_mode']) ? $config['output_mode'] : PHPTAL::HTML5;
+        $engine->setOutputMode($outputMode);
+        
         // Set template repositories
         if (isset($config['paths'])) {
             $engine->setTemplateRepository($config['paths']);
@@ -99,17 +105,17 @@ class PhptalRendererFactory
         $cachePurgeMode = isset($config['cache_purge_mode']) ? (bool) $config['cache_purge_mode'] : false;
         
         if ($cachePurgeMode) {
-			$cacheFolder = $engine->getPhpCodeDestination();
-			if (is_dir($cacheFolder)) {
-				foreach (new DirectoryIterator($cacheFolder) as $cacheItem) {
-					if (strncmp($cacheItem->getFilename(), 'tpl_', 4) != 0 || $cacheItem->isdir()) {
-						continue;
-					}
-					@unlink($cacheItem->getPathname());
-				}
-			}
-		}
-        
+            $cacheFolder = $engine->getPhpCodeDestination();
+            if (is_dir($cacheFolder)) {
+                foreach (new DirectoryIterator($cacheFolder) as $cacheItem) {
+                    if (strncmp($cacheItem->getFilename(), 'tpl_', 4) != 0 || $cacheItem->isdir()) {
+                        continue;
+                    }
+                    @unlink($cacheItem->getPathname());
+                }
+            }
+        }
+
         // Configure the whitespace compression mode
         $compressWhitespace = isset($config['compress_whitespace']) 
             ? (bool) $config['compress_whitespace'] 
