@@ -167,7 +167,9 @@ class PhptalEngineFactory
         }
 
         $talesRegistry = PHPTAL_TalesRegistry::getInstance();
-        $talesRegistry->registerPrefix('helper', [TalesHelper::class, 'helper']);
+        if (! $talesRegistry->isRegistered('helper')) {
+            $talesRegistry->registerPrefix('helper', [TalesHelper::class, 'helper']);
+        }
     }
     
     /**
