@@ -78,7 +78,7 @@ return [
 
 ## Included helpers and functions
 
-The included `HelperManager` adds support for using own functions inside templates proxying built-in `helper`
+The included `HelperManager` adds support for using own functions inside templates, proxying built-in `helper`
 custom expression modifier to user class. User class has to implement `HelperInterface` and `__invoke()` method.
 
 The following template helpers are automatically activated if UrlHelper and ServerUrlHelper are registered 
@@ -139,3 +139,7 @@ And inside template:
 ${helper:datetime(date)}
 Will show current date in ISO 8601 format
 ```
+
+## Extras
+
+[Zend Form and View Helpers](../../wiki/Zend-Form-and-View-Helpers)
