@@ -29,6 +29,8 @@ The following details configuration specific to PHPTAL, as consumed by the
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\Expressive\Phptal\HelperManager;
 use Zend\Expressive\Phptal\Helper;
+use Zend\Expressive\Phptal\PhptalEngineFactory;
+use PHPTAL as PhptalEngine;
 
 return [
     'dependencies' => [
@@ -38,6 +40,7 @@ return [
             
             Zend\Expressive\Template\TemplateRendererInterface::class =>
                 Zend\Expressive\Phptal\PhptalRendererFactory::class,
+            PhptalEngine::class => PhptalEngineFactory::class,
 
             HelperManager::class => InvokableFactory::class,
             Helper\UrlHelper::class => Helper\UrlHelperFactory::class,
@@ -45,6 +48,7 @@ return [
         ],
     ],
 
+    // if enabled, forces to reparse templates every time
     'debug' => boolean,
     
     'templates' => [
@@ -62,10 +66,15 @@ return [
         // set how long compiled templates and phptal:cache files are kept; in days 
         'cache_lifetime' => 30,
         'encoding' => 'set input and ouput encoding; defaults to UTF-8',
+        // one of the predefined constants: PHPTAL::HTML5,  PHPTAL::XML, PHPTAL::XHTML
+        'output_mode' => PhptalEngine::HTML5,
         // set whitespace compression mode
         'compress_whitespace' => boolean,
         // strip all html comments
         'strip_comments' => boolean,
+        'helpers' => [
+            // helper service names or instances
+        ]
     ],
 ];
 ```
@@ -96,6 +105,7 @@ As an example we can create own helper based on DateTime object:
 
 ```php
 use DateTime;
+use Zend\Expressive\Phptal\Helper\HelperInterface;
 
 class DateTimeHelper implements HelperInterface
 {
@@ -117,6 +127,25 @@ class DateTimeHelper implements HelperInterface
         return self::HELPER_NAME;
     }
 }
+```
+
+Now we need to pass it to configuration array:
+
+```php
+'dependencies' => [
+    'aliases' => [
+        'dateTimeHelper' => DateTimeHelper::class,
+    ],
+    'factories' => [
+        DateTimeHelper::class => DateTimeHelperFactory::class,
+    ],
+],
+
+'phptal' => [
+    'helpers' => [
+        DateTimeHelper::class, // or 'dateTimeHelper' alias
+    ]
+]
 ```
 
 Then pass new DateTime from SomeAction to our template:
